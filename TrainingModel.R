@@ -59,3 +59,23 @@ lm_model <- train(Price ~ ., data = train_data, method = "lm", trControl = ctrl)
 
 # Print the cross-validated linear regression model
 print(lm_model)
+
+# Load the required library
+library(glmnet)
+
+# Prepare data
+x_train <- as.matrix(train_data[, -15])  # Exclude the target variable (Price)
+y_train <- train_data$Price
+
+# Train Lasso regression model
+lasso_model <- cv.glmnet(x_train, y_train, alpha = 1)
+
+# Display the best lambda value
+print("Best Lambda for Lasso:")
+print(lasso_model$lambda.min)
+
+# Display the coefficients of the Lasso model
+print("Coefficients of the Lasso model:")
+print(coef(lasso_model, s = "lambda.min"))
+
+
