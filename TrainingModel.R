@@ -30,3 +30,20 @@ print("Training Set Dimensions:")
 print(dim(train_data))
 print("Testing Set Dimensions:")
 print(dim(test_data))
+
+# Perform bootstrapping on the cleaned dataset
+boot_samples <- 1000
+bootstrapped_means <- numeric(boot_samples)
+
+for (i in 1:boot_samples) {
+  boot_sample <- sample(car_data_clean$Price, replace = TRUE)
+  bootstrapped_means[i] <- mean(boot_sample)
+}
+
+# Summary of bootstrapped means
+summary_boot_means <- summary(bootstrapped_means)
+print("Summary of Bootstrapped Means:")
+print(summary_boot_means)
+
+# Plot histogram of bootstrapped means
+hist(bootstrapped_means, main = "Bootstrapped Means", xlab = "Mean Price")
