@@ -78,4 +78,15 @@ print(lasso_model$lambda.min)
 print("Coefficients of the Lasso model:")
 print(coef(lasso_model, s = "lambda.min"))
 
+# Train Ridge regression model
+ridge_model <- cv.glmnet(x_train, y_train, alpha = 0)
 
+# Display the best lambda value
+print("Best Lambda for Ridge:")
+print(ridge_model$lambda.min)
+
+# Display the coefficients of the Ridge model
+print("Coefficients of the Ridge model:")
+print(coef(ridge_model, s = "lambda.min"))
+
+print(ridge_model)
