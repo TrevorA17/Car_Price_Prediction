@@ -47,3 +47,15 @@ print(summary_boot_means)
 
 # Plot histogram of bootstrapped means
 hist(bootstrapped_means, main = "Bootstrapped Means", xlab = "Mean Price")
+
+# Load the required library
+library(caret)
+
+# Define training control
+ctrl <- trainControl(method = "cv", number = 5)
+
+# Perform cross-validation with linear regression on the cleaned dataset
+lm_model <- train(Price ~ ., data = train_data, method = "lm", trControl = ctrl)
+
+# Print the cross-validated linear regression model
+print(lm_model)
