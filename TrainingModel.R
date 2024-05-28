@@ -90,3 +90,33 @@ print("Coefficients of the Ridge model:")
 print(coef(ridge_model, s = "lambda.min"))
 
 print(ridge_model)
+
+# Load the required libraries
+library(caret)
+library(glmnet)
+
+# Prepare the data
+x <- as.matrix(car_data_clean[, -15])  # Features (excluding the target variable)
+y <- car_data_clean$Price  # Target variable
+
+# Define the training control
+ctrl <- trainControl(method = "cv", number = 5)  # 5-fold cross-validation
+
+# Define the models
+models <- c("lm_model", "lasso_model", "ridge_model")
+
+# Define model parameters
+model_params <- list(
+  lm_model = list(method = "lm"),
+  lasso_model = list(method = "glmnet", alpha = 1, tuneGrid = expand.grid(lambda = seq(0.001, 1, length = 100))),
+  ridge_model = list(method = "glmnet", alpha = 0, tuneGrid = expand.grid(lambda = seq(0.001, 1, length = 100)))
+)
+
+# Train the models
+res <- lapply(models, function(model_name) {
+  train(x, y, method = model_params[[model_name]]$method, trControl = ctrl, tuneGrid = model_params[[model_name]]$tuneGrid)
+})
+
+# Compare model performances
+resamples <- resamples(res)
+summary(resamples)
