@@ -138,3 +138,51 @@ tukey_gear_box_type <- TukeyHSD(anova_gear_box_type)
 tukey_category
 tukey_fuel_type
 tukey_gear_box_type
+
+# Load the required libraries
+install.packages("ggplot2")
+install.packages("GGally")
+library(ggplot2)
+library(GGally)
+
+# Univariate Plots
+
+# Histogram for numeric variables
+ggplot(car_data, aes(x = Price)) + 
+  geom_histogram(binwidth = 1000, fill = "blue", color = "black") +
+  labs(title = "Histogram of Car Prices", x = "Price", y = "Frequency")
+
+ggplot(car_data, aes(x = Mileage)) + 
+  geom_histogram(binwidth = 10000, fill = "green", color = "black") +
+  labs(title = "Histogram of Car Mileages", x = "Mileage", y = "Frequency")
+
+# Box plot for numeric variables
+ggplot(car_data, aes(x = Category, y = Price)) +
+  geom_boxplot(fill = "orange") +
+  labs(title = "Box Plot of Car Prices by Category", x = "Category", y = "Price")
+
+# Bar chart for categorical variables
+ggplot(car_data, aes(x = Fuel_type)) + 
+  geom_bar(fill = "purple") +
+  labs(title = "Bar Chart of Fuel Types", x = "Fuel Type", y = "Count")
+
+# Multivariate Plots
+
+# Scatter plot for numeric variables
+ggplot(car_data, aes(x = Mileage, y = Price)) + 
+  geom_point(color = "red") +
+  labs(title = "Scatter Plot of Price vs Mileage", x = "Mileage", y = "Price")
+
+# Scatter plot with a categorical variable
+ggplot(car_data, aes(x = Mileage, y = Price, color = Fuel_type)) + 
+  geom_point() +
+  labs(title = "Scatter Plot of Price vs Mileage by Fuel Type", x = "Mileage", y = "Price")
+
+# Pair plot for numeric variables
+ggpairs(car_data %>% select(Levy, Engine_volume, Mileage, Cylinders, Airbags, Price), 
+        title = "Pair Plot of Numeric Variables")
+
+# Box plot by a categorical variable
+ggplot(car_data, aes(x = Gear_box_type, y = Price, fill = Gear_box_type)) +
+  geom_boxplot() +
+  labs(title = "Box Plot of Car Prices by Gear Box Type", x = "Gear Box Type", y = "Price")
