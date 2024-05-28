@@ -40,3 +40,11 @@ gg_miss_var(car_data) + labs(title = "Missing Values in Car Dataset")
 
 # Detailed plot of missing data
 vis_miss(car_data) + labs(title = "Detailed Missing Values in Car Dataset")
+
+# Remove rows with missing values
+car_data_clean <- na.omit(car_data)
+
+# Summary of missing values after removing rows
+missing_values_after <- sapply(car_data_clean, function(x) sum(is.na(x)))
+print("Missing Values After Removing Rows:")
+print(missing_values_after)
