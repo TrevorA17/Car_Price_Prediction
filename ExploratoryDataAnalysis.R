@@ -1,19 +1,19 @@
 # Load dataset
 car_data <- read.csv("data/car_price_prediction.csv", colClasses = c(
   Levy = "numeric",
-  Manufacturer = "factor",
-  Model = "factor",
+  Manufacturer = "character",
+  Model = "character",
   Category = "factor",
-  `Leather interior` = "factor",
-  `Fuel type` = "factor",
-  `Engine volume` = "numeric",
+  Leather_interior = "factor",
+  Fuel_type = "factor",
+  Engine_volume = "numeric",
   Mileage = "numeric",
-  Cylinders = "integer",
-  `Gear box type` = "factor",
-  `Drive wheels` = "factor",
+  Cylinders = "numeric",
+  Gear_box_type = "factor",
+  Drive_wheels = "factor",
   Wheel = "factor",
   Color = "factor",
-  Airbags = "integer",
+  Airbags = "numeric",
   Price = "numeric"
 ))
 
