@@ -112,3 +112,29 @@ covariance_matrix <- cov(car_data %>% select(Levy, Engine_volume, Mileage, Cylin
 # Display correlation and covariance matrices
 correlation_matrix
 covariance_matrix
+
+# Load the required library
+install.packages("car")
+library(car)
+
+# One-way ANOVA for Category
+anova_category <- aov(Price ~ Category, data = car_data)
+summary(anova_category)
+
+# One-way ANOVA for Fuel_type
+anova_fuel_type <- aov(Price ~ Fuel_type, data = car_data)
+summary(anova_fuel_type)
+
+# One-way ANOVA for Gear_box_type
+anova_gear_box_type <- aov(Price ~ Gear_box_type, data = car_data)
+summary(anova_gear_box_type)
+
+# Post-hoc test (Tukey's HSD) to see which specific groups differ if ANOVA is significant
+tukey_category <- TukeyHSD(anova_category)
+tukey_fuel_type <- TukeyHSD(anova_fuel_type)
+tukey_gear_box_type <- TukeyHSD(anova_gear_box_type)
+
+# Display post-hoc test results
+tukey_category
+tukey_fuel_type
+tukey_gear_box_type
