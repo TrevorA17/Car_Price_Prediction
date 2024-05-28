@@ -1,4 +1,4 @@
-Levy,Manufacturer,Model,Category,Leather interior,Fuel type,Engine volume,Mileage,Cylinders,Gear box type,Drive wheels,Wheel,Color,Airbags,Price
+Levy,Manufacturer,Model,Category,Leather_interior,Fuel_type,Engine_volume,Mileage,Cylinders,Gear_box_type,Drive_wheels,Wheel,Color,Airbags,Price
 1399,LEXUS,RX 450,Jeep,Yes,Hybrid,3.5,186005,6,Automatic,4x4,Left wheel,Silver,12,13328
 1018,CHEVROLET,Equinox,Jeep,No,Petrol,3,192000,6,Tiptronic,4x4,Left wheel,Black,8,16621
 ,HONDA,FIT,Hatchback,No,Petrol,1.3,200000,4,Variator,Front,Righthand drive,Black,2,8467
