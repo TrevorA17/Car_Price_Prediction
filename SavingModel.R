@@ -6,7 +6,7 @@ library(glmnet)
 control <- trainControl(method = "cv", number = 10)
 
 # Train Lasso regression model
-lasso_model <- cv.glmnet(x, y, alpha = 1, trControl = control)
+lasso_model <- cv.glmnet(x_train, y_train, alpha = 1, trControl = control)
 
 # Create a directory named "models" if it doesn't exist
 if (!file.exists("./models")) {
