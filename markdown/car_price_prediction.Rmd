@@ -1,0 +1,439 @@
+---
+title: "Car Price Prediction"
+author: "Trevor Okinda"
+date: "2024"
+output:
+  github_document: 
+    toc: yes
+    toc_depth: 4
+    fig_width: 6
+    fig_height: 4
+    df_print: default
+editor_options:
+  chunk_output_type: console
+---
+
+# Student Details
+
+|                                              |     |
+|----------------------------------------------|-----|
+| **Student ID Number**                        | 134780 |
+| **Student Name**                             | Trevor Okinda |
+| **BBIT 4.2 Group**                           | C |
+| **Project Name**                             | Car Price Prediction |
+
+# Setup Chunk
+
+**Note:** the following KnitR options have been set as the global defaults: <BR> `knitr::opts_chunk$set(echo = TRUE, warning = FALSE, eval = TRUE, collapse = FALSE, tidy = TRUE)`.
+
+More KnitR options are documented here <https://bookdown.org/yihui/rmarkdown-cookbook/chunk-options.html> and here <https://yihui.org/knitr/options/>.
+
+```{r setup, include=FALSE}
+library(formatR)
+knitr::opts_chunk$set(
+  warning = FALSE,
+  collapse = FALSE
+)
+```
+
+### Source: 
+
+The dataset that was used can be downloaded here: *\<https://www.kaggle.com/datasets/deepcontractor/car-price-prediction-challenge\>*
+
+### Reference:
+
+*\<deepcontractor. (n.d.). Car Price Prediction Challenge [Dataset]. Kaggle. https://www.kaggle.com/datasets/deepcontractor/car-price-prediction-challenge\>\
+Refer to the APA 7th edition manual for rules on how to cite datasets: <https://apastyle.apa.org/style-grammar-guidelines/references/examples/data-set-references>*
+
+# Understanding the Dataset (Exploratory Data Analysis (EDA))
+## Load dataset
+```{r Load dataset}
+# Load dataset
+car_data <- read.csv("car_price_prediction.csv", colClasses = c(
+  Levy = "numeric",
+  Manufacturer = "character",
+  Model = "character",
+  Category = "factor",
+  Leather_interior = "factor",
+  Fuel_type = "factor",
+  Engine_volume = "numeric",
+  Mileage = "numeric",
+  Cylinders = "numeric",
+  Gear_box_type = "factor",
+  Drive_wheels = "factor",
+  Wheel = "factor",
+  Color = "factor",
+  Airbags = "numeric",
+  Price = "numeric"
+))
+
+# Display the structure of the dataset
+str(car_data)
+
+# View the first few rows of the dataset
+head(car_data)
+
+# View the dataset in a separate viewer window
+View(car_data)
+```
+
+## Measures of Frequency
+```{r MOF}
+# Load the required libraries
+library(dplyr)
+library(e1071)
+
+# Measures of Frequency
+frequency_count <- car_data %>%
+  select(Manufacturer, Model, Category, Leather_interior, Fuel_type, Gear_box_type, Drive_wheels, Wheel, Color) %>%
+  summarise_all(~list(table(.)))
+
+# Display frequency counts
+frequency_count
+```
+
+## Measures of Central Tendency
+```{r MOCT}
+# Measures of Central Tendency
+central_tendency <- car_data %>%
+  summarise(
+    mean_Levy = mean(Levy, na.rm = TRUE),
+    median_Levy = median(Levy, na.rm = TRUE),
+    mean_Engine_volume = mean(Engine_volume, na.rm = TRUE),
+    median_Engine_volume = median(Engine_volume, na.rm = TRUE),
+    mean_Mileage = mean(Mileage, na.rm = TRUE),
+    median_Mileage = median(Mileage, na.rm = TRUE),
+    mean_Cylinders = mean(Cylinders, na.rm = TRUE),
+    median_Cylinders = median(Cylinders, na.rm = TRUE),
+    mean_Airbags = mean(Airbags, na.rm = TRUE),
+    median_Airbags = median(Airbags, na.rm = TRUE),
+    mean_Price = mean(Price, na.rm = TRUE),
+    median_Price = median(Price, na.rm = TRUE)
+  )
+
+# Display measures of central tendency
+central_tendency
+```
+
+## Measures of Distribution
+```{r MOD}
+# Measures of Distribution
+distribution_measures <- car_data %>%
+  summarise(
+    var_Levy = var(Levy, na.rm = TRUE),
+    sd_Levy = sd(Levy, na.rm = TRUE),
+    range_Levy = diff(range(Levy, na.rm = TRUE)),
+    skewness_Levy = skewness(Levy, na.rm = TRUE),
+    kurtosis_Levy = kurtosis(Levy, na.rm = TRUE),
+    
+    var_Engine_volume = var(Engine_volume, na.rm = TRUE),
+    sd_Engine_volume = sd(Engine_volume, na.rm = TRUE),
+    range_Engine_volume = diff(range(Engine_volume, na.rm = TRUE)),
+    skewness_Engine_volume = skewness(Engine_volume, na.rm = TRUE),
+    kurtosis_Engine_volume = kurtosis(Engine_volume, na.rm = TRUE),
+    
+    var_Mileage = var(Mileage, na.rm = TRUE),
+    sd_Mileage = sd(Mileage, na.rm = TRUE),
+    range_Mileage = diff(range(Mileage, na.rm = TRUE)),
+    skewness_Mileage = skewness(Mileage, na.rm = TRUE),
+    kurtosis_Mileage = kurtosis(Mileage, na.rm = TRUE),
+    
+    var_Cylinders = var(Cylinders, na.rm = TRUE),
+    sd_Cylinders = sd(Cylinders, na.rm = TRUE),
+    range_Cylinders = diff(range(Cylinders, na.rm = TRUE)),
+    skewness_Cylinders = skewness(Cylinders, na.rm = TRUE),
+    kurtosis_Cylinders = kurtosis(Cylinders, na.rm = TRUE),
+    
+    var_Airbags = var(Airbags, na.rm = TRUE),
+    sd_Airbags = sd(Airbags, na.rm = TRUE),
+    range_Airbags = diff(range(Airbags, na.rm = TRUE)),
+    skewness_Airbags = skewness(Airbags, na.rm = TRUE),
+    kurtosis_Airbags = kurtosis(Airbags, na.rm = TRUE),
+    
+    var_Price = var(Price, na.rm = TRUE),
+    sd_Price = sd(Price, na.rm = TRUE),
+    range_Price = diff(range(Price, na.rm = TRUE)),
+    skewness_Price = skewness(Price, na.rm = TRUE),
+    kurtosis_Price = kurtosis(Price, na.rm = TRUE)
+  )
+
+# Display measures of distribution
+distribution_measures   
+```
+
+## Measures of Relationship
+```{r MOR}
+# Correlation matrix for numeric columns
+correlation_matrix <- cor(car_data %>% select(Levy, Engine_volume, Mileage, Cylinders, Airbags, Price), use = "complete.obs")
+
+# Covariance matrix for numeric columns
+covariance_matrix <- cov(car_data %>% select(Levy, Engine_volume, Mileage, Cylinders, Airbags, Price), use = "complete.obs")
+
+# Display correlation and covariance matrices
+correlation_matrix
+covariance_matrix
+```
+
+## ANOVA
+```{r ANOVA}
+# Load the required library
+library(car)
+
+# One-way ANOVA for Category
+anova_category <- aov(Price ~ Category, data = car_data)
+summary(anova_category)
+
+# One-way ANOVA for Fuel_type
+anova_fuel_type <- aov(Price ~ Fuel_type, data = car_data)
+summary(anova_fuel_type)
+
+# One-way ANOVA for Gear_box_type
+anova_gear_box_type <- aov(Price ~ Gear_box_type, data = car_data)
+summary(anova_gear_box_type)
+
+# Post-hoc test (Tukey's HSD) to see which specific groups differ if ANOVA is significant
+tukey_category <- TukeyHSD(anova_category)
+tukey_fuel_type <- TukeyHSD(anova_fuel_type)
+tukey_gear_box_type <- TukeyHSD(anova_gear_box_type)
+
+# Display post-hoc test results
+tukey_category
+tukey_fuel_type
+tukey_gear_box_type
+```
+
+## Plots
+```{r Plots}
+# Load the required libraries
+library(ggplot2)
+library(GGally)
+
+# Univariate Plots
+
+# Histogram for numeric variables
+ggplot(car_data, aes(x = Price)) + 
+  geom_histogram(binwidth = 1000, fill = "blue", color = "black") +
+  labs(title = "Histogram of Car Prices", x = "Price", y = "Frequency")
+
+ggplot(car_data, aes(x = Mileage)) + 
+  geom_histogram(binwidth = 10000, fill = "green", color = "black") +
+  labs(title = "Histogram of Car Mileages", x = "Mileage", y = "Frequency")
+
+# Box plot for numeric variables
+ggplot(car_data, aes(x = Category, y = Price)) +
+  geom_boxplot(fill = "orange") +
+  labs(title = "Box Plot of Car Prices by Category", x = "Category", y = "Price")
+
+# Bar chart for categorical variables
+ggplot(car_data, aes(x = Fuel_type)) + 
+  geom_bar(fill = "purple") +
+  labs(title = "Bar Chart of Fuel Types", x = "Fuel Type", y = "Count")
+
+# Multivariate Plots
+
+# Scatter plot for numeric variables
+ggplot(car_data, aes(x = Mileage, y = Price)) + 
+  geom_point(color = "red") +
+  labs(title = "Scatter Plot of Price vs Mileage", x = "Mileage", y = "Price")
+
+# Scatter plot with a categorical variable
+ggplot(car_data, aes(x = Mileage, y = Price, color = Fuel_type)) + 
+  geom_point() +
+  labs(title = "Scatter Plot of Price vs Mileage by Fuel Type", x = "Mileage", y = "Price")
+
+# Pair plot for numeric variables
+ggpairs(car_data %>% select(Levy, Engine_volume, Mileage, Cylinders, Airbags, Price), 
+        title = "Pair Plot of Numeric Variables")
+
+# Box plot by a categorical variable
+ggplot(car_data, aes(x = Gear_box_type, y = Price, fill = Gear_box_type)) +
+  geom_boxplot() +
+  labs(title = "Box Plot of Car Prices by Gear Box Type", x = "Gear Box Type", y = "Price")
+
+```
+
+# Preprocessing and Data Transformation
+## Missing Values
+```{r Missing Values}
+# Summary of missing values
+missing_values_summary <- sapply(car_data, function(x) sum(is.na(x)))
+missing_values_summary
+
+# Visualize missing values using a heatmap
+library(naniar)
+library(ggplot2)
+
+# Plot missing values
+gg_miss_var(car_data) + labs(title = "Missing Values in Car Dataset")
+
+# Detailed plot of missing data
+vis_miss(car_data) + labs(title = "Detailed Missing Values in Car Dataset")
+
+```
+
+## Omit Rows
+```{r Omit Rows}
+# Remove rows with missing values
+car_data_clean <- na.omit(car_data)
+
+# Summary of missing values after removing rows
+missing_values_after <- sapply(car_data_clean, function(x) sum(is.na(x)))
+print("Missing Values After Removing Rows:")
+print(missing_values_after)
+```
+
+# Training Model
+## Data Splitting
+```{r Data Splitting}
+library(caTools)
+
+# Split the cleaned dataset into training and testing sets
+set.seed(123)  # for reproducibility
+split <- sample.split(car_data_clean$Price, SplitRatio = 0.7)
+train_data <- subset(car_data_clean, split == TRUE)
+test_data <- subset(car_data_clean, split == FALSE)
+
+# Display the dimensions of the training and testing sets
+print("Training Set Dimensions:")
+print(dim(train_data))
+print("Testing Set Dimensions:")
+print(dim(test_data))
+```
+
+## Bootstrapping
+```{r Bootstrapping}
+# Perform bootstrapping on the cleaned dataset
+boot_samples <- 1000
+bootstrapped_means <- numeric(boot_samples)
+
+for (i in 1:boot_samples) {
+  boot_sample <- sample(car_data_clean$Price, replace = TRUE)
+  bootstrapped_means[i] <- mean(boot_sample)
+}
+
+# Summary of bootstrapped means
+summary_boot_means <- summary(bootstrapped_means)
+print("Summary of Bootstrapped Means:")
+print(summary_boot_means)
+
+# Plot histogram of bootstrapped means
+hist(bootstrapped_means, main = "Bootstrapped Means", xlab = "Mean Price")
+```
+
+## Cross-validation
+```{r Cross-validation}
+# Load the required library
+library(caret)
+
+# Define training control
+ctrl <- trainControl(method = "cv", number = 5)
+
+# Perform cross-validation with linear regression on the cleaned dataset
+lm_model <- train(Price ~ ., data = train_data, method = "lm", trControl = ctrl)
+
+# Print the cross-validated linear regression model
+print(lm_model)
+```
+
+## Training Different Models
+```{r Model Training}
+# Load the required library
+library(glmnet)
+
+# Prepare data
+x_train <- as.matrix(train_data[, -15])  # Exclude the target variable (Price)
+y_train <- train_data$Price
+
+# Train Lasso regression model
+lasso_model <- cv.glmnet(x_train, y_train, alpha = 1)
+
+# Display the best lambda value
+print("Best Lambda for Lasso:")
+print(lasso_model$lambda.min)
+
+# Display the coefficients of the Lasso model
+print("Coefficients of the Lasso model:")
+print(coef(lasso_model, s = "lambda.min"))
+
+# Train Ridge regression model
+ridge_model <- cv.glmnet(x_train, y_train, alpha = 0)
+
+# Display the best lambda value
+print("Best Lambda for Ridge:")
+print(ridge_model$lambda.min)
+
+# Display the coefficients of the Ridge model
+print("Coefficients of the Ridge model:")
+print(coef(ridge_model, s = "lambda.min"))
+
+print(ridge_model)
+```
+
+## Performance Comparison
+```{r Performance comparison}
+# Load the required libraries
+library(caret)
+library(glmnet)
+
+# Prepare the data
+x <- as.matrix(car_data_clean[, -15])  # Features (excluding the target variable)
+y <- car_data_clean$Price  # Target variable
+
+# Define the training control
+ctrl <- trainControl(method = "cv", number = 5)  # 5-fold cross-validation
+
+# Define the models
+models <- c("lm_model", "lasso_model", "ridge_model")
+
+# Define model parameters
+model_params <- list(
+  lm_model = list(method = "lm"),
+  lasso_model = list(method = "glmnet", alpha = 1, tuneGrid = expand.grid(lambda = seq(0.001, 1, length = 100))),
+  ridge_model = list(method = "glmnet", alpha = 0, tuneGrid = expand.grid(lambda = seq(0.001, 1, length = 100)))
+)
+
+# Train the models
+res <- lapply(models, function(model_name) {
+  train(x, y, method = model_params[[model_name]]$method, trControl = ctrl, tuneGrid = model_params[[model_name]]$tuneGrid)
+})
+
+# Compare model performances
+resamples <- resamples(res)
+summary(resamples)
+```
+
+# Saving Model
+```{r Saving Model}
+# Save the trained Lasso model to a file
+saveRDS(lasso_model, file = "./models/lasso_model.rds")
+
+# Load the saved Lasso model
+loaded_model_lasso <- readRDS("./models/lasso_model.rds")
+
+# Prepare new data for prediction
+new_data <- data.frame(
+  Levy = 1399,
+  Manufacturer = "LEXUS",
+  Model = "RX 450",
+  Category = "Jeep",
+  Leather_interior = "Yes",
+  Fuel_type = "Hybrid",
+  Engine_volume = 3.5,
+  Mileage = 186005,
+  Cylinders = 6,
+  Gear_box_type = "Automatic",
+  Drive_wheels = "4x4",
+  Wheel = "Left wheel",
+  Color = "Silver",
+  Airbags = 12
+)
+
+# Use the loaded model to make predictions for new data
+predictions_loaded_model <- predict(loaded_model_lasso, s = "lambda.min", newx = as.matrix(new_data))
+
+# Print predictions
+print(predictions_loaded_model)
+
+```
+
+
